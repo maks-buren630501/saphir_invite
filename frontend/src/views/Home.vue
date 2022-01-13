@@ -1,28 +1,32 @@
 <template>
   <v-card width="600" style="position:absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
-    <v-card-title></v-card-title>
-    <v-card-subtitle></v-card-subtitle>
+    <v-card-title>Дубицкий Антон Михайлович</v-card-title>
+    <v-card-subtitle>Форма проверки алгоритма</v-card-subtitle>
     <v-card-text>
-      <v-form ref="form" v-model="valid" onSubmit="return false;">
+      <v-form ref="form" v-model="valid" @keyup.enter="execute()" onSubmit="return false;">
         <v-text-field
-            v-model="value"
-            :rules="rules"
-            @input="result = ''"
-            @keyup.enter="execute()"
-            autofocus required
-            placeholder=""
-            label=""
-            class="pb-0"
-        >
-          <template v-slot:append-outer>
-            <v-btn @click="execute" icon :loading="loading" :disabled="!valid">
-              <v-icon>mdi-check</v-icon>
-            </v-btn>
-          </template>
-        </v-text-field>
+          v-model="value"
+          :rules="rulesValue"
+          @input="result = ''"
+          autofocus required
+          placeholder="Введите массив целых положительных чисел"
+          label="Введите числа"
+          class="pb-0"
+        />
+        <v-text-field
+          v-model="bonus"
+          :rules="rulesBonus"
+          @input="result = ''"
+          autofocus required
+          placeholder="Введите целое положительное число"
+          label="Введите число бонусов"
+          class="pb-0"
+        />
       </v-form>
-
     </v-card-text>
+    <v-card-actions class="justify-end">
+      <v-btn @click="execute" :disabled="!valid" text>Выполнить</v-btn>
+    </v-card-actions>
     <v-slide-y-transition>
       <v-card-title v-if="result">Ответ: {{ result }}</v-card-title>
     </v-slide-y-transition>
@@ -60,11 +64,19 @@ export default {
   name: 'Home',
   data: () => ({
     value: '',
+    bonus: '',
     showTests: false,
     loading: false,
     result: null,
     valid: true,
-    rules: [
+    rulesValue: [
+      value => !!value || 'Поле должно быть заполнено.',
+      value => {
+        const valid = true // Необходимо написать валидатор для заданного условия
+        return valid || 'Проверьте введенные данные'
+      },
+    ],
+    rulesBonus: [
       value => !!value || 'Поле должно быть заполнено.',
       value => {
         const valid = true // Необходимо написать валидатор для заданного условия
@@ -73,8 +85,16 @@ export default {
     ],
     examples: [
       {
-        input: '',
-        result: ''
+        input: '[22, 3, 15], 18228',
+        result: '[1860, 13640, 2728]'
+      },
+      {
+        input: '[8, 14, 11], 23541',
+        result: '[10241, 5852, 7448]'
+      },
+      {
+        input: '[8, 20, 17], 25281',
+        result: '[13515, 5406, 6360]'
       },
     ]
   }),
@@ -82,8 +102,8 @@ export default {
     execute() {
       if(this.$refs.form.validate()) {
         this.loading = true
-        this.axios.post('', {})
-          .then(r => {})
+        this.axios.post('bonus_list', {days_absence: this.value.split(' '), bonus: this.bonus})
+          .then(r => this.result = r.data.message)
           .catch(e => this.result = 'Ошибка выполнения')
           .finally(() => this.loading = false)
       }
