@@ -1,7 +1,7 @@
 <template>
   <v-card width="600" style="position:absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
-    <v-card-title></v-card-title>
-    <v-card-subtitle></v-card-subtitle>
+    <v-card-title>Дмитриев Павел Сергеевич</v-card-title>
+    <v-card-subtitle>Форма проверки алгоритма</v-card-subtitle>
     <v-card-text>
       <v-form ref="form" v-model="valid" onSubmit="return false;">
         <v-text-field
@@ -10,8 +10,8 @@
             @input="result = ''"
             @keyup.enter="execute()"
             autofocus required
-            placeholder=""
-            label=""
+            placeholder="Введите только целое положительное число"
+            label="Введите площадь"
             class="pb-0"
         >
           <template v-slot:append-outer>
@@ -73,8 +73,28 @@ export default {
     ],
     examples: [
       {
-        input: '',
-        result: ''
+        input: '1',
+        result: 'Возможно'
+      },
+      {
+        input: '5',
+        result: 'Возможно'
+      },
+      {
+        input: '10',
+        result: 'Возможно'
+      },
+      {
+        input: '6',
+        result: 'Нельзя'
+      },
+      {
+        input: '7',
+        result: 'Нельзя'
+      },
+      {
+        input: '14',
+        result: 'Нельзя'
       },
     ]
   }),
@@ -82,8 +102,8 @@ export default {
     execute() {
       if(this.$refs.form.validate()) {
         this.loading = true
-        this.axios.post('', {})
-          .then(r => {})
+        this.axios.get('/square', {params: {area: this.value}})
+          .then(r => this.result = r.data.result ? 'Возможно' : 'Нельзя')
           .catch(e => this.result = 'Ошибка выполнения')
           .finally(() => this.loading = false)
       }
