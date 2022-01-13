@@ -1,7 +1,7 @@
 <template>
   <v-card width="600" style="position:absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
-    <v-card-title></v-card-title>
-    <v-card-subtitle></v-card-subtitle>
+    <v-card-title>Мартинкевич Андрей Александрович</v-card-title>
+    <v-card-subtitle>Форма проверки алгоритма</v-card-subtitle>
     <v-card-text>
       <v-form ref="form" v-model="valid" onSubmit="return false;">
         <v-text-field
@@ -10,8 +10,8 @@
             @input="result = ''"
             @keyup.enter="execute()"
             autofocus required
-            placeholder=""
-            label=""
+            placeholder="Введите положительное целое"
+            label="Введите число"
             class="pb-0"
         >
           <template v-slot:append-outer>
@@ -73,8 +73,16 @@ export default {
     ],
     examples: [
       {
-        input: '',
-        result: ''
+        input: '3',
+        result: '[7, 9, 11]'
+      },
+      {
+        input: '4',
+        result: '[13, 15, 17, 19]'
+      },
+      {
+        input: '5',
+        result: '[21, 23, 25, 27, 29]'
       },
     ]
   }),
@@ -82,8 +90,8 @@ export default {
     execute() {
       if(this.$refs.form.validate()) {
         this.loading = true
-        this.axios.post('', {})
-          .then(r => {})
+        this.axios.get('sum_list/', {params: {num: this.value}})
+          .then(r => this.result = r.data.message)
           .catch(e => this.result = 'Ошибка выполнения')
           .finally(() => this.loading = false)
       }
