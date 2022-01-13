@@ -1,12 +1,21 @@
 <template>
   <v-card width="600" style="position:absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
-    <v-card-title>Title card</v-card-title>
-    <v-card-subtitle>Subtitle card</v-card-subtitle>
+    <v-card-title>Гуменюк Александр Сергеевич</v-card-title>
+    <v-card-subtitle>Форма проверки алгоритма</v-card-subtitle>
     <v-card-text>
-      <v-form>
-        <v-text-field autofocus placeholder="Request" label="Please enter your input" type="number">
+      <v-form ref="form" v-model="valid" onSubmit="return false;">
+        <v-text-field
+          v-model="value"
+          :rules="rules"
+          @input="result = ''"
+          @keyup.enter="execute()"
+          autofocus required
+          placeholder="Пример: 1 2 ... n"
+          label="Введите список"
+          class="pb-0"
+        >
           <template v-slot:append-outer>
-            <v-btn icon>
+            <v-btn @click="execute" icon :loading="loading" :disabled="!valid">
               <v-icon>mdi-check</v-icon>
             </v-btn>
           </template>
@@ -14,33 +23,32 @@
       </v-form>
 
     </v-card-text>
-    <template v-if="result">
-      <v-card-title>Result:</v-card-title>
-
-      <v-card-text>
-        <v-skeleton-loader v-if="loading" type="text, text, text, text"/>
-        <template v-else>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab consequuntur esse, laudantium repellat ullam vero. Ab
-          deleniti et exercitationem, impedit iure laboriosam odio officia possimus quas, quisquam rem sequi tenetur ullam
-          velit voluptatem. Ab ad autem, dolor eaque eius enim error est et eveniet fuga harum illo illum itaque labore
-          laboriosam molestiae nam neque nisi non officia quae, quis quo quod quos rem, sequi soluta suscipit velit voluptas
-          voluptatum. Blanditiis officiis placeat sint voluptate. Accusantium aliquam, assumenda atque debitis, ea enim esse
-          eveniet expedita explicabo impedit, necessitatibus nemo nisi non odio perspiciatis ratione repudiandae saepe ullam
-          ut vel vero voluptatibus.
-        </template>
-      </v-card-text>
-    </template>
+    <v-slide-y-transition>
+      <v-card-title v-if="result">Ответ: {{ result }}</v-card-title>
+    </v-slide-y-transition>
     <v-card-actions>
-      <v-btn @click="show = !show" text width="100%">Description</v-btn>
-      <v-spacer/>
+      <v-btn @click="showTests = !showTests" text width="100%">Тестовые данные</v-btn>
     </v-card-actions>
     <v-expand-transition>
-      <div v-show="show">
+      <div v-show="showTests">
         <v-divider></v-divider>
         <v-card-text>
-          I'm a thing. But, like most politicians, he promised more than he could deliver. You won't have time for
-          sleeping, soldier, not with all the bed making you'll be doing. Then we'll go with that data file! Hey, you
-          add a one and two zeros to that or we walk! You're going to do his laundry? I've got to find a way to escape.
+          <v-simple-table>
+            <template v-slot:default>
+              <thead>
+              <tr>
+                <th class="text-left">Входные данные</th>
+                <th class="text-left">Ответ</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(item, i) in examples" :key="i">
+                <td>{{ item.input }}</td>
+                <td>{{ item.result }}</td>
+              </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
         </v-card-text>
       </div>
     </v-expand-transition>
@@ -51,21 +59,50 @@
 export default {
   name: 'Home',
   data: () => ({
-    show: false,
-    loading: true,
+    value: '',
+    showTests: false,
+    loading: false,
     result: null,
-  })
+    valid: true,
+    rules: [
+      value => !!value || 'Поле должно быть заполнено.',
+      value => {
+        const valid = true // Необходимо написать валидатор для заданного условия
+        return valid || 'Проверьте введенные данные'
+      },
+    ],
+    examples: [
+      {
+        input: '1 2 3 4 5',
+        result: '4'
+      },
+      {
+        input: '1 2 3 5 7 9',
+        result: '5'
+      },
+      {
+        input: '0 5 8 9 11 13 14 16 17 19',
+        result: '10'
+      },
+      {
+        input: '0 1 2 3 5 6 7 11 13 15 17 19',
+        result: '17'
+      }
+    ]
+  }),
+  methods: {
+    execute() {
+      if(this.$refs.form.validate()) {
+        this.loading = true
+        this.axios.post('/progression', {list_nums: this.value.split(' ')})
+        .then(r => this.result = r.data.num)
+        .catch(e => this.result = 'Ошибка выполнения')
+        .finally(() => this.loading = false)
+      }
+    }
+  }
 }
 </script>
 
 <style>
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
-}
 </style>
