@@ -1,9 +1,16 @@
 import math
 
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_sum_list(num: int) -> list:
     cube = math.pow(num, 3)
