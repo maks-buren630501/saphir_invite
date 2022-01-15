@@ -65,11 +65,10 @@ export default {
     result: null,
     valid: true,
     rules: [
+
       value => !!value || 'Поле должно быть заполнено.',
-      value => {
-        const valid = true // Необходимо написать валидатор для заданного условия
-        return valid || 'Проверьте введенные данные'
-      },
+      value => ( /^([0-9\s]+)$/.test(value)) || 'Проверьте введенные данные',
+
     ],
     examples: [
       {
@@ -94,12 +93,15 @@ export default {
     execute() {
       if(this.$refs.form.validate()) {
         this.loading = true
+        this.value = this.value.replace(/ {1,}/g," "); //удаление двойных пробелов , если такие имеются
+        this.value = this.value.trim() //удаление последнего пробела, если он имеется
         this.axios.post('/progression', {list_nums: this.value.split(' ')})
         .then(r => this.result = r.data.num)
         .catch(e => this.result = 'Ошибка выполнения')
         .finally(() => this.loading = false)
       }
     }
+
   }
 }
 </script>
