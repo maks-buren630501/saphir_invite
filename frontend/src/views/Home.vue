@@ -72,14 +72,47 @@ export default {
     rulesValue: [
       value => !!value || 'Поле должно быть заполнено.',
       value => {
-        const valid = true // Необходимо написать валидатор для заданного условия
+        for (var i = 0; i < value.length; i++) {
+          if (value[i] == '$' || value[i] == '^' || 
+              value[i] == '*' || value[i] == '(' || 
+              value[i] == ')' || value[i] == '+' ||
+              value[i] == '.' || value[i] == '?' ||
+              value[i] == '[') {
+                return 'Поле может содержать только целые положительные числа, введенные через пробел'
+          }
+          const tmp = new RegExp (value[i])
+          if(!tmp.test(' 0 1 2 3 4 5 6 7 8 9 ')) {
+            return 'Поле может содержать только целые положительные числа, введенные через пробел'
+          }
+        }
+        if (value[0] == ' ' || value[value.length - 1] == ' ') {
+          return 'Первым и последним символом должно быть число'
+        }
+        const valid = true
         return valid || 'Проверьте введенные данные'
       },
     ],
     rulesBonus: [
       value => !!value || 'Поле должно быть заполнено.',
       value => {
-        const valid = true // Необходимо написать валидатор для заданного условия
+        for (var i = 0; i < value.length; i++) {
+          if (value[i] == '$' || value[i] == '^' || 
+              value[i] == '*' || value[i] == '(' || 
+              value[i] == ')' || value[i] == '+' ||
+              value[i] == '.' || value[i] == '?' ||
+              value[i] == '[') {
+                return 'Поле может содержать только целые положительные числа, введенные через пробел'
+          }
+          const tmp = new RegExp (value[i])
+          if(!tmp.test(' 0 1 2 3 4 5 6 7 8 9 ')) {
+            return 'Поле может содержать только целые положительные числа, введенные через пробел'
+          }
+        }
+        const tmp2 = value.split(' ') 
+        if (tmp2.length > 1) {
+          return 'Поле может содержать только одно положительное число'
+        }
+        const valid = true
         return valid || 'Проверьте введенные данные'
       },
     ],
