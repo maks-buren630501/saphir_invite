@@ -21,7 +21,13 @@ class UserRequest(BaseModel):
 
 def get_bonus_list(days_absence: list, bonus: int) -> list:
     employees = len(days_absence)
-    return [bonus/employees for i in range(employees)]
+    ABC = 1
+    down = 0
+    for i in range(employees):
+        ABC = ABC * days_absence[i]
+    for i in range(employees):
+        down = down + ABC/days_absence[i]
+    return [(ABC*bonus)/(down*days_absence[i]) for i in range(employees)]
 
 
 @app.post("/bonus_list")
