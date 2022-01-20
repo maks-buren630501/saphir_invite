@@ -66,10 +66,7 @@ export default {
     valid: true,
     rules: [
       value => !!value || 'Поле должно быть заполнено.',
-      value => {
-        const valid = true // Необходимо написать валидатор для заданного условия
-        return valid || 'Проверьте введенные данные'
-      },
+      value => value >= 0 || 'Проверьте введенные данные',
     ],
     examples: [
       {
