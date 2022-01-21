@@ -1,18 +1,27 @@
 <template>
-  <v-card width="600" style="position:absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
+  <v-card
+    width="600"
+    style="
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    "
+  >
     <v-card-title>Мартинкевич Андрей Александрович</v-card-title>
     <v-card-subtitle>Форма проверки алгоритма</v-card-subtitle>
     <v-card-text>
       <v-form ref="form" v-model="valid" onSubmit="return false;">
         <v-text-field
-            v-model="value"
-            :rules="rules"
-            @input="result = ''"
-            @keyup.enter="execute()"
-            autofocus required
-            placeholder="Введите положительное целое"
-            label="Введите число"
-            class="pb-0"
+          v-model="value"
+          :rules="rules"
+          @input="result = ''"
+          @keyup.enter="execute()"
+          autofocus
+          required
+          placeholder="Введите положительное целое"
+          label="Введите число"
+          class="pb-0"
         >
           <template v-slot:append-outer>
             <v-btn @click="execute" icon :loading="loading" :disabled="!valid">
@@ -21,13 +30,14 @@
           </template>
         </v-text-field>
       </v-form>
-
     </v-card-text>
     <v-slide-y-transition>
       <v-card-title v-if="result">Ответ: {{ result }}</v-card-title>
     </v-slide-y-transition>
     <v-card-actions>
-      <v-btn @click="showTests = !showTests" text width="100%">Тестовые данные</v-btn>
+      <v-btn @click="showTests = !showTests" text width="100%"
+        >Тестовые данные</v-btn
+      >
     </v-card-actions>
     <v-expand-transition>
       <div v-show="showTests">
@@ -36,16 +46,16 @@
           <v-simple-table>
             <template v-slot:default>
               <thead>
-              <tr>
-                <th class="text-left">Входные данные</th>
-                <th class="text-left">Ответ</th>
-              </tr>
+                <tr>
+                  <th class="text-left">Входные данные</th>
+                  <th class="text-left">Ответ</th>
+                </tr>
               </thead>
               <tbody>
-              <tr v-for="(item, i) in examples" :key="i">
-                <td>{{ item.input }}</td>
-                <td>{{ item.result }}</td>
-              </tr>
+                <tr v-for="(item, i) in examples" :key="i">
+                  <td>{{ item.input }}</td>
+                  <td>{{ item.result }}</td>
+                </tr>
               </tbody>
             </template>
           </v-simple-table>
@@ -57,47 +67,52 @@
 
 <script>
 export default {
-  name: 'Home',
+  name: "Home",
   data: () => ({
-    value: '',
+    value: "",
     showTests: false,
     loading: false,
     result: null,
     valid: true,
     rules: [
-      value => !!value || 'Поле должно быть заполнено.',
-      value => {
-        const valid = true // Необходимо написать валидатор для заданного условия
-        return valid || 'Проверьте введенные данные'
+      (value) => !!value || "Поле должно быть заполнено.",
+      (value) => {
+        const valid =
+          Number.isInteger(+value) &&
+          +value >= 0 &&
+          value !== "" &&
+          value.trim() !== "";
+        return valid || "Проверьте введенные данные";
       },
     ],
     examples: [
       {
-        input: '3',
-        result: '[7, 9, 11]'
+        input: "3",
+        result: "[7, 9, 11]",
       },
       {
-        input: '4',
-        result: '[13, 15, 17, 19]'
+        input: "4",
+        result: "[13, 15, 17, 19]",
       },
       {
-        input: '5',
-        result: '[21, 23, 25, 27, 29]'
+        input: "5",
+        result: "[21, 23, 25, 27, 29]",
       },
-    ]
+    ],
   }),
   methods: {
     execute() {
-      if(this.$refs.form.validate()) {
-        this.loading = true
-        this.axios.get('sum_list/', {params: {num: this.value}})
-          .then(r => this.result = r.data.message)
-          .catch(e => this.result = 'Ошибка выполнения')
-          .finally(() => this.loading = false)
+      if (this.$refs.form.validate()) {
+        this.loading = true;
+        this.axios
+          .get("sum_list/", { params: { num: this.value } })
+          .then((r) => (this.result = r.data.result))
+          .catch((e) => (this.result = "Ошибка выполнения"))
+          .finally(() => (this.loading = false));
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
