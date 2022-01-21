@@ -12,15 +12,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 def get_sum_list(num: int) -> list:
     cube = math.pow(num, 3)
-    result = []
-    a1 = int(cube/3)
-    for i in range(a1-2, a1+3, 2):
-        result.append(i)
+    midlValue = cube / num if (cube / num) % 2 else cube / num - 1
+    step = math.floor(num / 2)
+    result = [int(midlValue)]
+    if num % 2:
+        for i in range(step):
+            result.append(int(midlValue + 2 * (i+1)))
+            result.insert(0, int(midlValue - 2 * (i+1)))
+    else:
+        for i in range(step):
+            result.append(int(midlValue + 2 * (i+1)))
+            if i > 0:
+                result.insert(0, int(midlValue - 2 * (i)))
     return result
 
 
 @app.get("/sum_list")
 async def sum_list(num: int):
-    return {"message": get_sum_list(num)}
+    return {"result": get_sum_list(num)}
